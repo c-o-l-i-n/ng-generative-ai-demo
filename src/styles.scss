@@ -1,1 +1,82 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --font-family: system-ui, sans-serif;
+  --padding: 0.5rem 0.75rem;
+  --color: #555;
+}
+
+html,
+body {
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  padding: 0 0.5rem 3.5rem 0.5rem;
+}
+
+form {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: white;
+  border-top: 1px solid var(--color);
+  box-sizing: border-box;
+
+  input {
+    flex-grow: 1;
+    padding: var(--padding);
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    outline: none;
+  }
+
+  button {
+    background: dodgerblue;
+    color: white;
+    border: none;
+    border-radius: 0.25rem;
+    padding: var(--padding);
+    font-size: 1rem;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.message {
+  width: max-content;
+  max-width: 70%;
+  border: 1px solid var(--color);
+  padding: var(--padding);
+  border-radius: 0.5rem;
+  white-space: pre-wrap;
+  font-family: var(--font-family);
+
+  &.from-user {
+    margin-left: auto;
+  }
+
+  &.generating {
+    animation: fade-border ease-in-out 1.5s infinite;
+  }
+}
+
+@keyframes fade-border {
+  0% {
+    border-color: dodgerblue;
+  }
+  50% {
+    border-color: darkmagenta;
+  }
+  100% {
+    border-color: dodgerblue;
+  }
+}

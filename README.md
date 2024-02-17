@@ -1,27 +1,43 @@
-# NgGenerativeAiDemo
+# 🤖 Angular Generative AI Demo
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.2.0.
+[Demo](https://github.com/c-o-l-i-n/test-video/assets/40863449/5e1c3228-c421-4988-a19c-ac98a57d17ff)
 
-## Development server
+## 🏃 Getting started
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Create a `.env` file in the project root with your [Google AI Studio API key](https://aistudio.google.com/app/apikey):
 
-## Code scaffolding
+```
+GOOGLE_AI_STUDIO_API_KEY=paste-api-key-here
+```
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Run `npm run server` to start the backend server (`server.ts`) on port 3000. The server accepts a message request and uses the Google Gemini API to stream an AI-generated response.
 
-## Build
+Run `npm start` to start the Angular dev server on port 4200.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Navigate to `http://localhost:4200/`
 
-## Running unit tests
+## 🔑 Key takeaways
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Using the Google AI Studio API (or any other LLM API), we can add world-class generative AI to our Angular app!
 
-## Running end-to-end tests
+By combining RxJS and Signals, we can stream realtime AI text responses to the user.
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+To get the realtime stream of text from the AI, we need to configure 2 things with the HTTP client:
 
-## Further help
+1. Provide the HTTP client "with fetch":
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+```typescript
+provideHttpClient(withFetch());
+```
+
+2. Tell the HTTP client to observe text events and report progress:
+
+```typescript
+this.http.post('http://localhost:3000/message', prompt, {
+  observe: 'events',
+  responseType: 'text',
+  reportProgress: true,
+});
+```
+
+See `message.service.ts` for more implementation details.
