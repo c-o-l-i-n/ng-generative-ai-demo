@@ -2,42 +2,54 @@
 
 [Demo](https://github.com/c-o-l-i-n/test-video/assets/40863449/5e1c3228-c421-4988-a19c-ac98a57d17ff)
 
+## 🤔 Why does this matter?
+
+Integrating generative AI into Angular apps unlocks a realm of possibilities for enhancing user interactions and experiences. With LLM APIs and some RxJS magic, developers can implement personalized chatbots, interactive storytelling, and dynamic content creation.
+
 ## 🏃 Getting started
 
-Create a `.env` file in the project root with your [Google AI Studio API key](https://aistudio.google.com/app/apikey):
+1. Visit the [Google AI Studio](https://aistudio.google.com/app/apikey) to generate an API key.
 
-```
-GOOGLE_AI_STUDIO_API_KEY=paste-api-key-here
-```
+2. Create a `.env` file in the project root with your API key:
 
-Run `npm run server` to start the backend server (`server.ts`) on port 3000. The server accepts a message request and uses the Google Gemini API to stream an AI-generated response.
+   ```
+   GOOGLE_AI_STUDIO_API_KEY=paste-api-key-here
+   ```
 
-Run `npm start` to start the Angular dev server on port 4200.
+3. Run `npm install` to install dependencies.
 
-Navigate to `http://localhost:4200/`
+4. Run `npm run server` to start the backend server (`server.ts`) on port 3000. The server accepts a message request and uses the Google Gemini API to stream an AI-generated response.
+
+5. In another terminal, run `npm start` to start the Angular dev server on port 4200.
+
+6. Navigate to `http://localhost:4200/`
 
 ## 🔑 Key takeaways
 
-Using the Google AI Studio API (or any other LLM API), we can add world-class generative AI to our Angular app!
+- **Unleashing Generative AI:** Integrate powerful AI capabilities into Angular apps using an LLM API, offering users dynamic and engaging experiences.
 
-By combining RxJS and Signals, we can stream realtime AI text responses to the user.
+- **Real-time Text Streaming:** Utilize RxJS and Signals to stream real-time AI text responses directly to users, enhancing interactivity and responsiveness.
 
-To get the realtime stream of text from the AI, we need to configure 2 things with the HTTP client:
+- **HTTP Client Configuration:** Configure the Angular HTTP client to handle real-time AI text streams:
 
-1. Provide the HTTP client "with fetch":
+  1. Provide the HTTP client "with fetch" in [`app.config.ts`](src/app/app.config.ts):
 
-```typescript
-provideHttpClient(withFetch());
-```
+  ```typescript
+  provideHttpClient(withFetch());
+  ```
 
-2. Tell the HTTP client to observe text events and report progress:
+  2. Tell the HTTP client to observe text events and report progress:
 
-```typescript
-this.http.post('http://localhost:3000/message', prompt, {
-  observe: 'events',
-  responseType: 'text',
-  reportProgress: true,
-});
-```
+  ```typescript
+  this.http.post('http://localhost:3000/message', prompt, {
+    observe: 'events',
+    responseType: 'text',
+    reportProgress: true,
+  });
+  ```
 
-See `message.service.ts` for more implementation details.
+## 🔭 Files to explore
+
+- [`message.service.ts`](src/app/message.service.ts)
+- [`app.config.ts`](src/app/app.config.ts)
+- [`server.ts`](src/server.ts)
