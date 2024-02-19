@@ -1,6 +1,6 @@
 # 🤖 Angular Generative AI Demo
 
-[Demo](https://github.com/c-o-l-i-n/test-video/assets/40863449/5e1c3228-c421-4988-a19c-ac98a57d17ff)
+[Demo](https://github.com/c-o-l-i-n/ng-generative-ai-demo/assets/40863449/b296b7b6-c6b4-4f83-adcb-de9c98c2c00f)
 
 ## 🤔 Why does this matter?
 
