@@ -8,7 +8,7 @@ import { FormsModule, NgForm } from '@angular/forms';
   standalone: true,
   imports: [NgClass, FormsModule],
   template: `
-    <h1>Angular Generative AI Demo</h1>
+    <h1>🤖 Angular Generative AI Demo</h1>
 
     @for (message of messages(); track message.id) {
       <pre

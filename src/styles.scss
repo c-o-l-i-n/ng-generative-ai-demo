@@ -65,18 +65,18 @@ form {
   }
 
   &.generating {
-    animation: fade-border ease-in-out 1.5s infinite;
+    &::after {
+      content: '▋';
+      animation: fade-cursor ease-in-out 500ms infinite alternate;
+    }
   }
 }
 
-@keyframes fade-border {
-  0% {
-    border-color: dodgerblue;
+@keyframes fade-cursor {
+  from {
+    opacity: 25%;
   }
-  50% {
-    border-color: darkmagenta;
-  }
-  100% {
-    border-color: dodgerblue;
+  to {
+    opacity: 100%;
   }
 }
