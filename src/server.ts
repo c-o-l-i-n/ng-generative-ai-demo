@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { GoogleGenerativeAI } from '@google/generative-ai';
@@ -25,27 +25,13 @@ server.listen(port, () => {
   console.log('Server is running on port', port);
 });
 
-server.post('/message', async (req: Request, res: Response) => {
+server.post('/message', async (req, res) => {
   const prompt: string = req.body;
+  const result = await chat.sendMessageStream(prompt);
 
-  console.log('Received prompt:', prompt);
-
-  if (!prompt) {
-    return res.status(400).end();
+  for await (const partialMessage of result.stream) {
+    res.write(partialMessage.text());
   }
 
-  try {
-    console.log('Generating response:');
-    const result = await chat.sendMessageStream(prompt);
-
-    for await (const chunk of result.stream) {
-      const chunkText = chunk.text();
-      console.log(chunkText);
-      res.write(chunkText);
-    }
-  } catch (err) {
-    res.status(500);
-  }
-
-  return res.end();
+  res.end();
 });
