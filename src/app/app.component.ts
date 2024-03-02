@@ -24,12 +24,11 @@ import { FormsModule, NgForm } from '@angular/forms';
     <form #form="ngForm" (ngSubmit)="sendMessage(form, form.value.message)">
       <input
         name="message"
-        [disabled]="generatingInProgress()"
         placeholder="Type a message"
-        type="text"
         ngModel
         required
         autofocus
+        [disabled]="generatingInProgress()"
       />
       <button type="submit" [disabled]="generatingInProgress() || form.invalid">
         Send
@@ -44,8 +43,11 @@ export class AppComponent {
   readonly generatingInProgress = this.messageService.generatingInProgress;
 
   private readonly scrollOnMessageChanges = effect(() => {
+    // run this effect on every messages change
     this.messages();
-    setTimeout(() =>
+
+    // scroll after the messages render
+    setImmediate(() =>
       window.scrollTo({
         top: document.body.scrollHeight,
         behavior: 'smooth',

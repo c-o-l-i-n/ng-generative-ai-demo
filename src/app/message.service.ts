@@ -1,5 +1,5 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { concat, filter, map, Observable, of, scan } from 'rxjs';
+import { filter, map, Observable, startWith } from 'rxjs';
 import {
   HttpClient,
   HttpDownloadProgressEvent,
@@ -15,11 +15,6 @@ export interface Message {
   generating?: boolean;
 }
 
-interface MessageChunk {
-  text: string;
-  generating: boolean;
-}
-
 @Injectable({
   providedIn: 'root',
 })
@@ -33,73 +28,68 @@ export class MessageService {
   readonly messages = this._messages.asReadonly();
   readonly generatingInProgress = this._generatingInProgress.asReadonly();
 
-  sendMessage(text: string): void {
+  sendMessage(prompt: string): void {
     this._generatingInProgress.set(true);
 
     this._completeMessages.set([
       ...this._completeMessages(),
-      { id: crypto.randomUUID(), text, fromUser: true },
-    ]);
-    this._messages.set(this._completeMessages());
-
-    this.getChatResponseStream(text).subscribe({
-      next: (inProgressMessage) => {
-        this._messages.set([...this._completeMessages(), inProgressMessage]);
+      {
+        id: window.crypto.randomUUID(),
+        text: prompt,
+        fromUser: true,
       },
+    ]);
+
+    this.getChatResponseStream(prompt).subscribe({
+      next: (message) =>
+        this._messages.set([...this._completeMessages(), message]),
+
       complete: () => {
         this._completeMessages.set(this._messages());
         this._generatingInProgress.set(false);
       },
+
       error: () => this._generatingInProgress.set(false),
     });
   }
 
   private getChatResponseStream(prompt: string): Observable<Message> {
-    return concat(
-      of({
-        id: 'pending',
-        text: '…',
-        fromUser: false,
-        generating: true,
-      }),
-      this.http
-        .post('http://localhost:3000/message', prompt, {
-          observe: 'events',
-          responseType: 'text',
-          reportProgress: true,
-        })
-        .pipe(
-          filter((event: HttpEvent<string>) =>
-            [HttpEventType.DownloadProgress, HttpEventType.Response].includes(
-              event.type,
-            ),
-          ),
-          map((event: HttpEvent<string>): MessageChunk => {
-            if (event.type === HttpEventType.DownloadProgress) {
-              return {
-                text: (event as HttpDownloadProgressEvent).partialText ?? '',
-                generating: true,
-              };
-            }
-            return {
-              text: (event as HttpResponse<string>).body ?? '',
-              generating: false,
-            };
-          }),
-          scan<MessageChunk, Message>(
-            (message, chunk) => ({
-              ...message,
-              text: chunk.text,
-              generating: chunk.generating,
-            }),
-            {
-              id: crypto.randomUUID(),
-              text: '',
-              fromUser: false,
-              generating: true,
-            },
-          ),
+    const id = window.crypto.randomUUID();
+
+    return this.http
+      .post('http://localhost:3000/message', prompt, {
+        responseType: 'text',
+        observe: 'events',
+        reportProgress: true,
+      })
+      .pipe(
+        filter(
+          (event: HttpEvent<string>): boolean =>
+            event.type === HttpEventType.DownloadProgress ||
+            event.type === HttpEventType.Response,
         ),
-    );
+        map(
+          (event: HttpEvent<string>): Message =>
+            event.type === HttpEventType.DownloadProgress
+              ? {
+                  id,
+                  text: (event as HttpDownloadProgressEvent).partialText!,
+                  fromUser: false,
+                  generating: true,
+                }
+              : {
+                  id,
+                  text: (event as HttpResponse<string>).body!,
+                  fromUser: false,
+                  generating: false,
+                },
+        ),
+        startWith<Message>({
+          id,
+          text: '',
+          fromUser: false,
+          generating: true,
+        }),
+      );
   }
 }
