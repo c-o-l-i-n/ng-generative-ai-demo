@@ -4,10 +4,9 @@ import { MessageService } from './message.service';
 import { FormsModule, NgForm } from '@angular/forms';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [NgClass, FormsModule],
-  template: `
+    selector: 'app-root',
+    imports: [NgClass, FormsModule],
+    template: `
     <h1>🤖 Angular Generative AI Demo</h1>
 
     @for (message of messages(); track message.id) {
@@ -34,7 +33,7 @@ import { FormsModule, NgForm } from '@angular/forms';
         Send
       </button>
     </form>
-  `,
+  `
 })
 export class AppComponent {
   private readonly messageService = inject(MessageService);
