@@ -1,7 +1,7 @@
-import express, { Request, Response } from 'express';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import express, { Request, Response } from 'express';
 
 dotenv.config();
 
@@ -15,7 +15,7 @@ if (!googleAiStudioApiKey) {
 }
 
 const genAI = new GoogleGenerativeAI(googleAiStudioApiKey);
-const model = genAI.getGenerativeModel({ model: 'gemini-1.0-pro' });
+const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-lite' });
 const chat = model.startChat();
 
 server.use(express.text());
@@ -44,7 +44,8 @@ server.post('/message', async (req: Request, res: Response) => {
       res.write(chunkText);
     }
   } catch (err) {
-    res.status(500);
+    res.status(500).end();
+    console.error('Error generating response:', err);
   }
 
   return res.end();
