@@ -31,7 +31,7 @@ Generative AI is changing the way we interact with technology. As AI chatbots be
 
 ## 🔑 Key takeaways
 
-- **Manage State with Signals:** Keep track of the chat state (list of messages and whether the LLM is generating a new message) with Angular Signals.
+- **Manage State with Signals:** Track chat state using Angular Signals. `completeMessages` and `incomingMessage` are writable signals; `messages` and `generatingInProgress` are derived with `computed`.
 
 - **Realtime Text Streaming with RxJS Observables:** Utilize RxJS to react to realtime updates from the LLM API.
 
@@ -39,7 +39,7 @@ Generative AI is changing the way we interact with technology. As AI chatbots be
   1. Provide the HTTP client "with fetch" in [`app.config.ts`](src/app/app.config.ts):
 
   ```typescript
-  provideHttpClient(withFetch());
+  provideHttpClient(withFetch()),
   ```
 
   2. Tell the HTTP client to observe text events and report progress:
@@ -52,26 +52,16 @@ Generative AI is changing the way we interact with technology. As AI chatbots be
   });
   ```
 
-- **Blinking Cursor:** Create a blinking cursor effect using the CSS `::after` pseudo-element and CSS `@keyframes`:
+- **Loading State:** While waiting for the first chunk, show a pulsing indicator. In this demo, we use Tailwind's `animate-pulse` class:
 
-  ```css
-  .message {
-    &.generating {
-      &::after {
-        content: '▋';
-        animation: fade-cursor ease-in-out 500ms infinite alternate;
-      }
-    }
-  }
+  ```html
+  <div class="size-4 animate-pulse rounded-full bg-white"></div>
+  ```
 
-  @keyframes fade-cursor {
-    from {
-      opacity: 25%;
-    }
-    to {
-      opacity: 100%;
-    }
-  }
+- **Markdown Rendering:** Render AI responses as markdown using [ngx-markdown](https://github.com/jfcere/ngx-markdown):
+
+  ```html
+  <markdown [data]="message.text" />
   ```
 
 ## 🔭 Files to explore
