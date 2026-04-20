@@ -7,18 +7,22 @@ import { FormsModule, NgForm } from '@angular/forms';
   selector: 'app-root',
   imports: [FormsModule],
   template: `
-    <h1>🤖 Angular Generative AI Demo</h1>
+    <h1 class="text-2xl font-bold my-4">🤖 Angular Generative AI Demo</h1>
 
     @for (message of messages(); track message.id) {
       <pre
-        class="message"
-        [class.from-user]="message.fromUser"
+        class="w-fit max-w-[70%] border border-gray-500 py-2 px-3 rounded-lg whitespace-pre-wrap font-sans my-2"
+        [class.ml-auto]="message.fromUser"
         [class.generating]="message.generating"
         >{{ message.text }}</pre
       >
     }
 
-    <form #form="ngForm" (ngSubmit)="sendMessage(form, form.value.message)">
+    <form
+      #form="ngForm"
+      (ngSubmit)="sendMessage(form, form.value.message)"
+      class="fixed bottom-0 left-0 w-full flex gap-2 p-2 bg-white border-t border-gray-500 box-border"
+    >
       <input
         name="message"
         placeholder="Type a message"
@@ -26,8 +30,13 @@ import { FormsModule, NgForm } from '@angular/forms';
         required
         autofocus
         [disabled]="generatingInProgress()"
+        class="flex-1 py-2 px-3 border-0 rounded-lg text-base outline-none"
       />
-      <button type="submit" [disabled]="generatingInProgress() || form.invalid">
+      <button
+        type="submit"
+        [disabled]="generatingInProgress() || form.invalid"
+        class="bg-blue-500 text-white border-0 rounded py-2 px-3 text-base cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+      >
         Send
       </button>
     </form>
