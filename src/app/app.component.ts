@@ -4,18 +4,16 @@ import { MessageService } from './message.service';
 import { FormsModule, NgForm } from '@angular/forms';
 
 @Component({
-    selector: 'app-root',
-    imports: [NgClass, FormsModule],
-    template: `
+  selector: 'app-root',
+  imports: [FormsModule],
+  template: `
     <h1>🤖 Angular Generative AI Demo</h1>
 
     @for (message of messages(); track message.id) {
       <pre
         class="message"
-        [ngClass]="{
-          'from-user': message.fromUser,
-          generating: message.generating
-        }"
+        [class.from-user]="message.fromUser"
+        [class.generating]="message.generating"
         >{{ message.text }}</pre
       >
     }
@@ -33,7 +31,7 @@ import { FormsModule, NgForm } from '@angular/forms';
         Send
       </button>
     </form>
-  `
+  `,
 })
 export class AppComponent {
   private readonly messageService = inject(MessageService);
