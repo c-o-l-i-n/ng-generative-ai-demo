@@ -1,8 +1,9 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @layer base {
   body {
-    @apply font-sans px-2 pb-14;
+    @apply font-sans bg-gray-900 text-gray-100;
   }
 }
 
@@ -19,5 +20,3 @@
     opacity: 100%;
   }
 }
-
-@import 'tailwindcss';
