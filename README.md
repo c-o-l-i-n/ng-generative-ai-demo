@@ -55,7 +55,7 @@ Generative AI is changing the way we interact with technology. As AI chatbots be
 
 - **Blinking Cursor:** Create a blinking cursor effect using the CSS `::after` pseudo-element and CSS `@keyframes`:
 
-  ```scss
+  ```css
   .message {
     &.generating {
       &::after {
