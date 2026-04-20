@@ -1,4 +1,4 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { filter, map, Observable, startWith } from 'rxjs';
 import { HttpClient, HttpDownloadProgressEvent, HttpEvent, HttpEventType, HttpResponse } from '@angular/common/http';
 
@@ -15,35 +15,34 @@ export interface Message {
 export class MessageService {
   private readonly http = inject(HttpClient);
 
-  private readonly _completeMessages = signal<Message[]>([]);
-  private readonly _messages = signal<Message[]>([]);
-  private readonly _generatingInProgress = signal<boolean>(false);
+  private readonly completeMessages = signal<Message[]>([]);
+  private readonly incomingMessage = signal<Message | null>(null);
 
-  readonly messages = this._messages.asReadonly();
-  readonly generatingInProgress = this._generatingInProgress.asReadonly();
+  readonly messages = computed(() => {
+    const incomingMessage = this.incomingMessage();
+    return incomingMessage ? [...this.completeMessages(), incomingMessage] : this.completeMessages();
+  });
+
+  readonly generatingInProgress = computed(() => this.incomingMessage() !== null);
 
   sendMessage(prompt: string): void {
-    this._generatingInProgress.set(true);
-
-    this._completeMessages.set([
-      ...this._completeMessages(),
-      {
-        id: window.crypto.randomUUID(),
-        text: prompt,
-        fromUser: true,
-      },
+    this.completeMessages.update((msgs) => [
+      ...msgs,
+      { id: window.crypto.randomUUID(), text: prompt, fromUser: true },
     ]);
 
     this.getChatResponseStream(prompt).subscribe({
-      next: (message) =>
-        this._messages.set([...this._completeMessages(), message]),
+      next: (message) => this.incomingMessage.set(message),
 
       complete: () => {
-        this._completeMessages.set(this._messages());
-        this._generatingInProgress.set(false);
+        const completedMessage = this.incomingMessage();
+        if (completedMessage) {
+          this.completeMessages.update((messages) => [...messages, { ...completedMessage, generating: false }]);
+        }
+        this.incomingMessage.set(null);
       },
 
-      error: () => this._generatingInProgress.set(false),
+      error: () => this.incomingMessage.set(null),
     });
   }
 
