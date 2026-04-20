@@ -36,7 +36,6 @@ Generative AI is changing the way we interact with technology. As AI chatbots be
 - **Realtime Text Streaming with RxJS Observables:** Utilize RxJS to react to realtime updates from the LLM API.
 
 - **HTTP Client Configuration:** Configure the Angular HTTP client to handle realtime text streams:
-
   1. Provide the HTTP client "with fetch" in [`app.config.ts`](src/app/app.config.ts):
 
   ```typescript
@@ -74,7 +73,6 @@ Generative AI is changing the way we interact with technology. As AI chatbots be
     }
   }
   ```
-  
 
 ## 🔭 Files to explore
 

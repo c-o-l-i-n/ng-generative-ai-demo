@@ -8,22 +8,22 @@ import { MarkdownComponent } from 'ngx-markdown';
   imports: [FormsModule, MarkdownComponent],
   template: `
     <!-- Sticky Top Nav -->
-    <header class="sticky top-0 z-10 bg-gray-900 border-b border-gray-700">
-      <div class="max-w-2xl mx-auto py-4 px-2">
+    <header class="sticky top-0 z-10 border-b border-gray-700 bg-gray-900">
+      <div class="mx-auto max-w-2xl px-2 py-4">
         <h1 class="text-lg font-semibold text-gray-100">
           Angular LLM Chat Demo
         </h1>
       </div>
     </header>
 
-    <div class="max-w-2xl mx-auto flex flex-col min-h-screen">
-      <main class="flex-1 flex flex-col gap-3 py-4 px-2 pb-24">
+    <div class="mx-auto flex min-h-screen max-w-2xl flex-col">
+      <main class="flex flex-1 flex-col gap-3 px-2 py-4 pb-24">
         <!-- Empty State -->
         @if (messages().length === 0) {
           <div
-            class="flex flex-col items-center justify-center flex-1 text-center text-gray-500 py-16"
+            class="flex flex-1 flex-col items-center justify-center py-16 text-center text-gray-500"
           >
-            <div class="text-4xl mb-3">💬</div>
+            <div class="mb-3 text-4xl">💬</div>
             <p class="text-sm">Send a message to get started</p>
           </div>
         }
@@ -34,42 +34,46 @@ import { MarkdownComponent } from 'ngx-markdown';
           @if (message.fromUser) {
             <div class="flex flex-row-reverse">
               <pre
-                class="max-w-[80%] py-2 px-4 rounded-2xl rounded-br-sm bg-blue-600 text-white whitespace-pre-wrap font-sans leading-relaxed"
+                class="max-w-[80%] rounded-2xl rounded-br-sm bg-blue-600 px-4 py-2 font-sans leading-relaxed whitespace-pre-wrap text-white"
                 >{{ message.text }}</pre
               >
             </div>
           } @else {
-            <!-- AI-generate Message: rendered as markdown, shows a blinking cursor while generating -->
-            <markdown
-              [data]="message.text"
-              class="w-full py-2 px-1 leading-relaxed text-gray-200 prose prose-invert max-w-none"
-              [class.generating]="message.generating"
-            />
+            <!-- AI message: pulsing circle while waiting for first chunk, then plain markdown -->
+            @if (message.generating && !message.text) {
+              <div class="px-1 py-2">
+                <div class="size-4 animate-pulse rounded-full bg-white"></div>
+              </div>
+            } @else {
+              <markdown
+                [data]="message.text"
+                class="prose prose-invert w-full max-w-none px-1 py-2 leading-relaxed text-gray-200"
+              />
+            }
           }
         }
       </main>
 
-      <!-- fixed input bar -->
+      <!-- Fixed Input Bar -->
       <form
         #form="ngForm"
         (ngSubmit)="sendMessage(form, form.value.message)"
-        class="fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-700 p-3"
+        class="fixed right-0 bottom-0 left-0 border-t border-gray-700 bg-gray-900 p-3"
       >
-        <div class="max-w-2xl mx-auto flex gap-2">
+        <div class="mx-auto flex max-w-2xl gap-2">
           <input
             name="message"
             [placeholder]="placeholder()"
             ngModel
             required
             autofocus
-            [disabled]="generatingInProgress()"
-            class="flex-1 py-2 px-4 bg-gray-800 border border-gray-600 text-gray-100 placeholder-gray-500 rounded-full outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-900 transition-all disabled:opacity-50"
+            class="flex-1 rounded-full border border-gray-600 bg-gray-800 px-4 py-2 text-gray-100 placeholder-gray-500 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-900"
           />
-          <!-- submit; disabled while a response is streaming -->
+          <!-- Submit Button: disabled while a response is streaming -->
           <button
             type="submit"
             [disabled]="generatingInProgress() || form.invalid"
-            class="bg-blue-500 hover:bg-blue-600 text-white rounded-full size-10 flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+            class="flex size-10 shrink-0 items-center justify-center rounded-full bg-blue-500 text-white transition-colors enabled:hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -100,7 +104,7 @@ export class AppComponent {
   readonly generatingInProgress = this.messageService.generatingInProgress;
 
   readonly placeholder = computed(() =>
-    this.messages().length === 0 ? 'How can I help you today?' : 'Reply',
+    this.messages().length === 0 ? 'How can I help you today?' : 'Reply...',
   );
 
   private readonly scrollOnMessageChanges = effect(() => {

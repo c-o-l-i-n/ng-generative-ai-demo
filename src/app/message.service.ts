@@ -1,6 +1,12 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { filter, map, Observable, startWith } from 'rxjs';
-import { HttpClient, HttpDownloadProgressEvent, HttpEvent, HttpEventType, HttpResponse } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpDownloadProgressEvent,
+  HttpEvent,
+  HttpEventType,
+  HttpResponse,
+} from '@angular/common/http';
 
 export interface Message {
   id: string;
@@ -20,10 +26,14 @@ export class MessageService {
 
   readonly messages = computed(() => {
     const incomingMessage = this.incomingMessage();
-    return incomingMessage ? [...this.completeMessages(), incomingMessage] : this.completeMessages();
+    return incomingMessage
+      ? [...this.completeMessages(), incomingMessage]
+      : this.completeMessages();
   });
 
-  readonly generatingInProgress = computed(() => this.incomingMessage() !== null);
+  readonly generatingInProgress = computed(
+    () => this.incomingMessage() !== null,
+  );
 
   sendMessage(prompt: string): void {
     this.completeMessages.update((msgs) => [
@@ -37,7 +47,10 @@ export class MessageService {
       complete: () => {
         const completedMessage = this.incomingMessage();
         if (completedMessage) {
-          this.completeMessages.update((messages) => [...messages, { ...completedMessage, generating: false }]);
+          this.completeMessages.update((messages) => [
+            ...messages,
+            { ...completedMessage, generating: false },
+          ]);
         }
         this.incomingMessage.set(null);
       },

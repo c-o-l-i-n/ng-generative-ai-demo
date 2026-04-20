@@ -1,22 +1,8 @@
-@import "tailwindcss";
-@plugin "@tailwindcss/typography";
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
 
 @layer base {
   body {
-    @apply font-sans bg-gray-900 text-gray-100;
-  }
-}
-
-.generating::after {
-  content: '▋';
-  animation: fade-cursor ease-in-out 500ms infinite alternate;
-}
-
-@keyframes fade-cursor {
-  from {
-    opacity: 25%;
-  }
-  to {
-    opacity: 100%;
+    @apply bg-gray-900 font-sans text-gray-100;
   }
 }
