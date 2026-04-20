@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 import { serve } from '@hono/node-server';
 import dotenv from 'dotenv';
 import { Hono } from 'hono';
@@ -13,9 +13,8 @@ if (!GOOGLE_AI_STUDIO_API_KEY) {
   throw new Error('Provide GOOGLE_AI_STUDIO_API_KEY in a .env file');
 }
 
-const genAI = new GoogleGenerativeAI(GOOGLE_AI_STUDIO_API_KEY);
-const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-lite' });
-const chat = model.startChat();
+const ai = new GoogleGenAI({ apiKey: GOOGLE_AI_STUDIO_API_KEY });
+const chat = ai.chats.create({ model: 'gemini-3.1-flash-lite-preview' });
 
 const app = new Hono();
 
@@ -33,12 +32,14 @@ app.post('/message', async (c) => {
   return stream(c, async (s) => {
     try {
       console.log('Generating response:');
-      const result = await chat.sendMessageStream(prompt);
+      const response = await chat.sendMessageStream({
+        message: prompt,
+      });
 
-      for await (const chunk of result.stream) {
-        const chunkText = chunk.text();
+      for await (const chunk of response) {
+        const chunkText = chunk.text;
         console.log(chunkText);
-        await s.write(chunkText);
+        await s.write(chunkText ?? '');
       }
     } catch (err) {
       console.error('Error generating response:', err);
