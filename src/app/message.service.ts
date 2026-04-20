@@ -1,12 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { filter, map, Observable, startWith } from 'rxjs';
-import {
-  HttpClient,
-  HttpDownloadProgressEvent,
-  HttpEvent,
-  HttpEventType,
-  HttpResponse,
-} from '@angular/common/http';
+import { HttpClient, HttpDownloadProgressEvent, HttpEvent, HttpEventType, HttpResponse } from '@angular/common/http';
 
 export interface Message {
   id: string;
