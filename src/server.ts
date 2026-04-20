@@ -1,52 +1,52 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import cors from 'cors';
+import { serve } from '@hono/node-server';
 import dotenv from 'dotenv';
-import express, { Request, Response } from 'express';
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
+import { stream } from 'hono/streaming';
 
 dotenv.config();
 
-const server = express();
-const port = 3000;
+const { GOOGLE_AI_STUDIO_API_KEY } = process.env;
 
-const googleAiStudioApiKey = process.env['GOOGLE_AI_STUDIO_API_KEY'];
-
-if (!googleAiStudioApiKey) {
+if (!GOOGLE_AI_STUDIO_API_KEY) {
   throw new Error('Provide GOOGLE_AI_STUDIO_API_KEY in a .env file');
 }
 
-const genAI = new GoogleGenerativeAI(googleAiStudioApiKey);
+const genAI = new GoogleGenerativeAI(GOOGLE_AI_STUDIO_API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-lite' });
 const chat = model.startChat();
 
-server.use(express.text());
-server.use(cors());
+const app = new Hono();
 
-server.listen(port, () => {
-  console.log('Server is running on port', port);
-});
+app.use(cors());
 
-server.post('/message', async (req: Request, res: Response) => {
-  const prompt: string = req.body;
+app.post('/message', async (c) => {
+  const prompt = await c.req.text();
 
   console.log('Received prompt:', prompt);
 
   if (!prompt) {
-    return res.status(400).end();
+    return c.body(null, 400);
   }
 
-  try {
-    console.log('Generating response:');
-    const result = await chat.sendMessageStream(prompt);
+  return stream(c, async (s) => {
+    try {
+      console.log('Generating response:');
+      const result = await chat.sendMessageStream(prompt);
 
-    for await (const chunk of result.stream) {
-      const chunkText = chunk.text();
-      console.log(chunkText);
-      res.write(chunkText);
+      for await (const chunk of result.stream) {
+        const chunkText = chunk.text();
+        console.log(chunkText);
+        await s.write(chunkText);
+      }
+    } catch (err) {
+      console.error('Error generating response:', err);
     }
-  } catch (err) {
-    res.status(500).end();
-    console.error('Error generating response:', err);
-  }
+  });
+});
 
-  return res.end();
+const port = 3000;
+serve({ fetch: app.fetch, port }, () => {
+  console.log('Server is running on port', port);
 });
