@@ -14,7 +14,7 @@ if (!GOOGLE_AI_STUDIO_API_KEY) {
 }
 
 const ai = new GoogleGenAI({ apiKey: GOOGLE_AI_STUDIO_API_KEY });
-const chat = ai.chats.create({ model: 'gemini-3.1-flash-lite-preview' });
+const chat = ai.chats.create({ model: 'gemini-3.1-flash-lite' });
 
 const app = new Hono();
 
