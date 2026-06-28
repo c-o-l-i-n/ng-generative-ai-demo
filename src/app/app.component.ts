@@ -35,8 +35,7 @@ import { MarkdownComponent } from 'ngx-markdown';
             <div class="flex flex-row-reverse">
               <pre
                 class="max-w-[80%] rounded-2xl rounded-br-sm bg-blue-600 px-4 py-2 font-sans leading-relaxed whitespace-pre-wrap text-white"
-                >{{ message.text }}</pre
-              >
+                >{{ message.text }}</pre>
             </div>
           } @else {
             @if (message.generating && !message.text) {

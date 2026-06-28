@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Service, signal } from '@angular/core';
 import { filter, map, Observable, startWith } from 'rxjs';
 import {
   HttpClient,
@@ -15,9 +15,7 @@ export interface Message {
   generating?: boolean;
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class MessageService {
   private readonly http = inject(HttpClient);
 
@@ -74,21 +72,20 @@ export class MessageService {
             event.type === HttpEventType.DownloadProgress ||
             event.type === HttpEventType.Response,
         ),
-        map(
-          (event: HttpEvent<string>): Message =>
-            event.type === HttpEventType.DownloadProgress
-              ? {
-                  id,
-                  text: (event as HttpDownloadProgressEvent).partialText!,
-                  fromUser: false,
-                  generating: true,
-                }
-              : {
-                  id,
-                  text: (event as HttpResponse<string>).body!,
-                  fromUser: false,
-                  generating: false,
-                },
+        map((event: HttpEvent<string>): Message =>
+          event.type === HttpEventType.DownloadProgress
+            ? {
+                id,
+                text: (event as HttpDownloadProgressEvent).partialText!,
+                fromUser: false,
+                generating: true,
+              }
+            : {
+                id,
+                text: (event as HttpResponse<string>).body!,
+                fromUser: false,
+                generating: false,
+              },
         ),
         startWith<Message>({
           id,
