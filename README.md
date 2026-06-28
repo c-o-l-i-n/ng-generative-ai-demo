@@ -8,9 +8,6 @@ Generative AI is changing the way we interact with technology. As AI chatbots be
 
 ## 🏃 Getting started
 
-> [!NOTE]  
-> The Gemini API is free, so long as you're willing to share all of your usage data with Google.
-
 1. Run `git clone https://github.com/c-o-l-i-n/ng-generative-ai-demo.git` to clone this repo.
 
 2. Visit the [Google AI Studio](https://aistudio.google.com/app/apikey) to generate an API key.
@@ -36,13 +33,6 @@ Generative AI is changing the way we interact with technology. As AI chatbots be
 - **Realtime Text Streaming with RxJS Observables:** Utilize RxJS to react to realtime updates from the LLM API.
 
 - **HTTP Client Configuration:** Configure the Angular HTTP client to handle realtime text streams:
-  1. Provide the HTTP client "with fetch" in [`app.config.ts`](src/app/app.config.ts):
-
-  ```typescript
-  provideHttpClient(withFetch()),
-  ```
-
-  2. Tell the HTTP client to observe text events and report progress:
 
   ```typescript
   this.http.post('http://localhost:3000/message', prompt, {
